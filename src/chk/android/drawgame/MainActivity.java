@@ -1,14 +1,22 @@
-package com.chk.android.drawgame;
+package chk.android.drawgame;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -16,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
+    private final static String SAVE_PATH = Environment.getExternalStorageDirectory().getPath() + "/drawgame";
     private final static int MAX_DRAW_TIME = 5000;
     private final static int MAX_GUESS_TIME = 10000;
     private final static int TIME_PERIOD = 10;
@@ -30,9 +39,9 @@ public class MainActivity extends Activity implements OnClickListener {
     private Button mClearButton;
     private Button mDrawButton;
     private Button mGuessButton;
+    private Button mNextButton;
     private TextView mTimeText;
     private TextView mWordText;
-    private TextView mAnswerText;
     private View mCover;
     private View mActionContainer;
 
@@ -72,16 +81,17 @@ public class MainActivity extends Activity implements OnClickListener {
         mClearButton = (Button) findViewById(R.id.clear);
         mDrawButton = (Button) findViewById(R.id.draw);
         mGuessButton = (Button) findViewById(R.id.guess);
+        mNextButton = (Button) findViewById(R.id.next);
         mTimeText = (TextView) findViewById(R.id.time);
         mWordText = (TextView) findViewById(R.id.word);
-        mAnswerText = (TextView) findViewById(R.id.answer);
         mCover = findViewById(R.id.cover);
         mActionContainer = findViewById(R.id.action_container);
 
         mClearButton.setOnClickListener(this);
         mDrawButton.setOnClickListener(this);
         mGuessButton.setOnClickListener(this);
-        mAnswerText.setOnClickListener(this);
+        mWordText.setOnClickListener(this);
+        mNextButton.setOnClickListener(this);
 
         mMainHandler = new MainHandler();
 
@@ -97,8 +107,10 @@ public class MainActivity extends Activity implements OnClickListener {
             startDraw();
         } else if (v == mGuessButton) {
             startGuess();
-        } else if (v == mAnswerText) {
-            mAnswerText.setAlpha(1f);
+        } else if (v == mNextButton) {
+            startNew();
+        } else if (v == mWordText) {
+            mWordText.setAlpha(1f);
         }
     }
 
@@ -119,6 +131,14 @@ public class MainActivity extends Activity implements OnClickListener {
         }
     }
 
+    private void startNew() {
+        mWord = null;
+        mView.clear();
+        mNextButton.setVisibility(View.INVISIBLE);
+        mGuessButton.setVisibility(View.GONE);
+        mCover.setVisibility(View.VISIBLE);
+    }
+
     private void startDraw() {
         if (TextUtils.isEmpty(mWord)) {
             mWord = Words.generateWord(this);
@@ -133,11 +153,11 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         }
         mWordText.setText(mWord);
+        mWordText.setAlpha(1f);
         mWordText.setVisibility(View.VISIBLE);
         mActionContainer.setVisibility(View.VISIBLE);
         mView.setEnabled(true);
         mCover.setVisibility(View.GONE);
-        mAnswerText.setVisibility(View.GONE);
 
         if (mTimer != null) {
             mTimer.cancel();
@@ -162,10 +182,13 @@ public class MainActivity extends Activity implements OnClickListener {
 
     private void startGuess() {
 
+
         mView.setEnabled(false);
         mActionContainer.setVisibility(View.INVISIBLE);
         mWordText.setVisibility(View.INVISIBLE);
         mCover.setVisibility(View.GONE);
+
+        saveBitmap(mWord);
 
         if (mTimer != null) {
             mTimer.cancel();
@@ -214,15 +237,36 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     private void doGuessTimeUp() {
-        if (!TextUtils.isEmpty(mWord)) {
-            mAnswerText.setAlpha(0f);
-            mAnswerText.setText(mWord);
-            mAnswerText.setVisibility(View.VISIBLE);
-        }
+        mWordText.setAlpha(0f);
+        mWordText.setVisibility(View.VISIBLE);
+        mNextButton.setVisibility(View.VISIBLE);
+    }
 
-        mView.clear();
-        mWord = null;
-        mGuessButton.setVisibility(View.GONE);
-        mCover.setVisibility(View.VISIBLE);
+    private void saveBitmap(String word) {
+        File dir = new File(SAVE_PATH);
+        BufferedOutputStream bos = null;
+        try {
+            if (!dir.exists() && !dir.mkdirs()) {
+                Log.e("chk", "can not save bitmap");
+                return;
+            }
+            File f = new File(dir, System.currentTimeMillis() + word + ".png");
+            bos = new BufferedOutputStream(new FileOutputStream(f));
+            mView.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (FileNotFoundException e) {
+            Log.e("chk", e.toString());
+        } catch (IOException e) {
+            Log.e("chk", e.toString());
+        } finally {
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    Log.e("chk", e.toString());
+                }
+            }
+        }
     }
 }

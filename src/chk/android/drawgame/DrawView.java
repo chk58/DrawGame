@@ -1,4 +1,4 @@
-package com.chk.android.drawgame;
+package chk.android.drawgame;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -44,6 +44,7 @@ public class DrawView extends View {
 
         mBoard = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         mBoardCanvas = new Canvas(mBoard);
+        mBoardCanvas.drawColor(DEFAULT_BACKGOUND);
     }
 
     public void setDrawColor(int color) {
@@ -57,6 +58,10 @@ public class DrawView extends View {
     public void clear() {
         mBoardCanvas.drawColor(DEFAULT_BACKGOUND);
         invalidate();
+    }
+
+    public Bitmap getBitmap() {
+        return mBoard;
     }
 
     @Override

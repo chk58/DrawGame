@@ -1,4 +1,4 @@
-package com.chk.android.drawgame;
+package chk.android.drawgame;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -13,15 +13,15 @@ public class Words {
     private static final String PREFS_WORDS = "words";
 
     public static final String WORDS_CHENGYU = "刻舟求剑;狐假虎威";
-    public static final String WORDS_RENWU = "牛顿";
-    public static final String WORDS_DONGXI = "电脑;大树;西游记;南瓜;圣诞树;;蝴蝶;手套;蛋炒饭;啤酒;饮水机";
-    public static final String WORDS_DIFANG = "天安门;沙滩";
+    public static final String WORDS_RENWU = "牛顿;刘翔";
+    public static final String WORDS_DONGXI = "电脑;大树;西游记;南瓜;圣诞树;蝴蝶;手套;蛋炒饭;啤酒;饮水机;娃娃鱼";
+    public static final String WORDS_DIFANG = "天安门;沙滩;中国";
 
     public static final String WORDS =
-            WORDS_CHENGYU + ";" +
-            WORDS_RENWU + ";" +
-            WORDS_DONGXI + ";" +
-            WORDS_DIFANG;
+             WORDS_CHENGYU + ";" +
+             WORDS_RENWU + ";" +
+             WORDS_DONGXI + ";" +
+             WORDS_DIFANG;
 
     public static String generateWord(Context context) {
         String result = null;
