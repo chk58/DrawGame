@@ -10,7 +10,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -90,7 +92,6 @@ public class MainActivity extends Activity implements OnClickListener {
         mClearButton.setOnClickListener(this);
         mDrawButton.setOnClickListener(this);
         mGuessButton.setOnClickListener(this);
-        mWordText.setOnClickListener(this);
         mNextButton.setOnClickListener(this);
 
         mMainHandler = new MainHandler();
@@ -110,7 +111,8 @@ public class MainActivity extends Activity implements OnClickListener {
         } else if (v == mNextButton) {
             startNew();
         } else if (v == mWordText) {
-            mWordText.setAlpha(1f);
+            mWordText.setOnClickListener(null);
+            mWordText.setText(mWord);
         }
     }
 
@@ -152,9 +154,8 @@ public class MainActivity extends Activity implements OnClickListener {
                 return;
             }
         }
+        mWordText.setOnClickListener(null);
         mWordText.setText(mWord);
-        mWordText.setAlpha(1f);
-        mWordText.setVisibility(View.VISIBLE);
         mActionContainer.setVisibility(View.VISIBLE);
         mView.setEnabled(true);
         mCover.setVisibility(View.GONE);
@@ -182,10 +183,14 @@ public class MainActivity extends Activity implements OnClickListener {
 
     private void startGuess() {
 
-
         mView.setEnabled(false);
         mActionContainer.setVisibility(View.INVISIBLE);
-        mWordText.setVisibility(View.INVISIBLE);
+
+        mWordText.setOnClickListener(null);
+        mWordText.setText(getString(R.string.guess_prompt,
+                mWord.length(),
+                Words.getType(mWord)));
+
         mCover.setVisibility(View.GONE);
 
         saveBitmap(mWord);
@@ -237,8 +242,7 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     private void doGuessTimeUp() {
-        mWordText.setAlpha(0f);
-        mWordText.setVisibility(View.VISIBLE);
+        mWordText.setOnClickListener(this);
         mNextButton.setVisibility(View.VISIBLE);
     }
 
@@ -255,6 +259,8 @@ public class MainActivity extends Activity implements OnClickListener {
             mView.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, bos);
             bos.flush();
             bos.close();
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                    Uri.fromFile(f)));
         } catch (FileNotFoundException e) {
             Log.e("chk", e.toString());
         } catch (IOException e) {
