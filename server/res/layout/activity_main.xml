@@ -14,11 +14,9 @@
             android:layout_height="@dimen/action_container_height"
             android:orientation="horizontal"
             android:background="@android:color/darker_gray">
-            <Button 
-                android:id="@+id/clear"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="清除"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,7 +30,7 @@
                     android:id="@+id/time"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="2"
+                    android:layout_weight="1"
                     android:lines="1"
                     android:textSize="@dimen/text_size_huge"
                     android:gravity="center" />
@@ -40,51 +38,20 @@
                     android:id="@+id/word"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="3"
-                    android:clickable="true"
+                    android:layout_weight="1"
                     android:textSize="@dimen/text_size_extra_large"
                     android:gravity="center" />
-                <Button 
-                    android:id="@+id/next"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:textSize="@dimen/text_size_large"
-                    android:text="下一题"
-                    android:visibility="invisible"/>
             </LinearLayout>
-            <chk.android.drawgame.DrawView
+            <chk.android.drawgame.server.DrawView
                 android:id="@+id/draw_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout android:id="@+id/cover"
+    <TextView
+        android:id="@+id/info"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        style="?android:attr/borderlessButtonStyle"
-        android:background="@android:color/darker_gray"
-        android:orientation="horizontal">
-        <Button android:id="@+id/draw"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:textSize="@dimen/text_size_extra_huge"
-            android:text="大家画" />
-        <Button android:id="@+id/guess"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:textSize="@dimen/text_size_extra_huge"
-            android:text="我来猜"
-            android:visibility="gone" />
-        <Button android:id="@+id/connect"
-            android:layout_weight="0.2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:text="server" />
-    </LinearLayout>
+        android:background="@android:color/white"
+        android:gravity="center" />
 </FrameLayout>

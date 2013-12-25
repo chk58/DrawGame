@@ -1,4 +1,4 @@
-package chk.android.drawgame;
+package chk.android.drawgame.server;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 
 public class DrawView extends View {
@@ -21,7 +20,6 @@ public class DrawView extends View {
     private float mMoveY;
     private int mWidth;
     private int mHeight;
-    private DrawCallback mCallback;
 
     public DrawView(Context context) {
         this(context, null, 0);
@@ -73,46 +71,25 @@ public class DrawView extends View {
         canvas.drawBitmap(mBoard, 0, 0, null);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (!isEnabled()) {
-            return false;
-        }
-        int action = event.getAction();
-        float x = event.getX();
-        float y = event.getY();
-        switch (action) {
-        case MotionEvent.ACTION_DOWN:
-            mBoardCanvas.drawPoint(x, y, mPaint);
-            invalidate();
-            if (mCallback != null) {
-                mCallback.onDrawPoint(x / mWidth, y / mHeight);
-            }
-            break;
-        case MotionEvent.ACTION_MOVE:
-            mBoardCanvas.drawLine(mMoveX, mMoveY, x, y, mPaint);
-            invalidate();
-            if (mCallback != null) {
-                mCallback.onDrawLine(x / mWidth, y / mHeight);
-            }
-            break;
-        }
+    public void drawPoint(float xScale, float yScale) {
+        float x = xScale * mWidth;
+        float y = yScale * mHeight;
+        mBoardCanvas.drawPoint(x, y, mPaint);
+        invalidate();
         mMoveX = x;
         mMoveY = y;
-        return true;
+    }
+
+    public void drawLine(float xScale, float yScale) {
+        float x = xScale * mWidth;
+        float y = yScale * mHeight;
+        mBoardCanvas.drawLine(mMoveX, mMoveY, x, y, mPaint);
+        invalidate();
+        mMoveX = x;
+        mMoveY = y;
     }
 
     public void onDestory() {
         mBoard.recycle();
-        mCallback = null;
-    }
-
-    public void setCallback(DrawCallback c) {
-        mCallback = c;
-    }
-
-    public interface DrawCallback {
-        public void onDrawPoint(float xScale, float yScale);
-        public void onDrawLine(float xScale, float yScale);
     }
 }

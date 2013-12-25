@@ -4,3 +4,8 @@ gen
 .project
 .settings
 .gitattributes
+server/bin
+server/gen
+server/.classpath
+server/.project
+server/.settings

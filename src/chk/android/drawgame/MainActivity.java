@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,8 +25,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import chk.android.drawgame.DrawView.DrawCallback;
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends Activity implements OnClickListener, DrawCallback {
     private final static String SAVE_PATH = Environment.getExternalStorageDirectory().getPath() + "/drawgame";
     private final static int MAX_DRAW_TIME = 5000;
     private final static int MAX_GUESS_TIME = 10000;
@@ -36,12 +38,15 @@ public class MainActivity extends Activity implements OnClickListener {
     private final static int WHAT_GUESS_TIME_UP = 3;
     private final static DecimalFormat FORMATTER = new DecimalFormat("#0.00");
 
+    public static Point sWindowSize = new Point();
+
     private Toast mNoMoreToast;
     private DrawView mView;
     private Button mClearButton;
     private Button mDrawButton;
     private Button mGuessButton;
     private Button mNextButton;
+    private Button mConnectButton;
     private TextView mTimeText;
     private TextView mWordText;
     private View mCover;
@@ -51,6 +56,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private Timer mTimer;
     private long mTime;
     private MainHandler mMainHandler;
+    private Client mClient;
 
     private class MainHandler extends Handler {
 
@@ -77,13 +83,17 @@ public class MainActivity extends Activity implements OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindowManager().getDefaultDisplay().getSize(sWindowSize);
+
         setContentView(R.layout.activity_main);
-        // int width = getWindow().getDecorView().getHeight();
+
         mView = (DrawView) findViewById(R.id.draw_view);
         mClearButton = (Button) findViewById(R.id.clear);
         mDrawButton = (Button) findViewById(R.id.draw);
         mGuessButton = (Button) findViewById(R.id.guess);
         mNextButton = (Button) findViewById(R.id.next);
+        mConnectButton = (Button) findViewById(R.id.connect);
         mTimeText = (TextView) findViewById(R.id.time);
         mWordText = (TextView) findViewById(R.id.word);
         mCover = findViewById(R.id.cover);
@@ -93,6 +103,8 @@ public class MainActivity extends Activity implements OnClickListener {
         mDrawButton.setOnClickListener(this);
         mGuessButton.setOnClickListener(this);
         mNextButton.setOnClickListener(this);
+        mConnectButton.setOnClickListener(this);
+        mView.setCallback(this);
 
         mMainHandler = new MainHandler();
 
@@ -104,16 +116,32 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onClick(View v) {
         if (v == mClearButton) {
             mView.clear();
+            if (mClient != null) {
+                mClient.onClear();
+            }
         } else if (v == mDrawButton) {
             startDraw();
         } else if (v == mGuessButton) {
             startGuess();
         } else if (v == mNextButton) {
             startNew();
+        } else if (v == mConnectButton) {
+            startConnect();
         } else if (v == mWordText) {
             mWordText.setOnClickListener(null);
             mWordText.setText(mWord);
         }
+    }
+
+    private void startConnect() {
+        mConnectButton.setVisibility(View.GONE);
+
+        if (mClient != null) {
+            mClient.close();
+        }
+
+        mClient = new Client(this);
+        mClient.start();
     }
 
     @Override
@@ -130,6 +158,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
         if (mView != null) {
             mView.onDestory();
+        }
+
+        if (mClient != null) {
+            mClient.close();
         }
     }
 
@@ -152,6 +184,9 @@ public class MainActivity extends Activity implements OnClickListener {
                         Toast.LENGTH_SHORT);
                 mNoMoreToast.show();
                 return;
+            }
+            if (mClient != null) {
+                mClient.onNewWord(mWord);
             }
         }
         mWordText.setOnClickListener(null);
@@ -221,13 +256,19 @@ public class MainActivity extends Activity implements OnClickListener {
         if (left < 0) {
             left = 0;
         }
-        mTimeText.setText(FORMATTER.format(left / 1000f));
+        String time = FORMATTER.format(left / 1000f);
+        mTimeText.setText(time);
+
+        if (mClient != null) {
+            mClient.onUpdateTime(time);
+        }
     }
 
     private void doDrawTimeUp() {
         if (!TextUtils.isEmpty(mWord)) {
             mGuessButton.setVisibility(View.VISIBLE);
         }
+        mView.setEnabled(false);
         mGuessButton.setEnabled(false);
         mDrawButton.setEnabled(false);
         mCover.setVisibility(View.VISIBLE);
@@ -273,6 +314,20 @@ public class MainActivity extends Activity implements OnClickListener {
                     Log.e("chk", e.toString());
                 }
             }
+        }
+    }
+
+    @Override
+    public void onDrawPoint(float xScale, float yScale) {
+        if (mClient != null) {
+            mClient.onDrawPoint(xScale, yScale);
+        }
+    }
+
+    @Override
+    public void onDrawLine(float xScale, float yScale) {
+        if (mClient != null) {
+            mClient.onDrawLine(xScale, yScale);
         }
     }
 }
