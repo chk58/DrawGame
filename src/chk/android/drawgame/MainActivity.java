@@ -29,8 +29,8 @@ import chk.android.drawgame.DrawView.DrawCallback;
 
 public class MainActivity extends Activity implements OnClickListener, DrawCallback {
     private final static String SAVE_PATH = Environment.getExternalStorageDirectory().getPath() + "/drawgame";
-    private final static int MAX_DRAW_TIME = 5000;
-    private final static int MAX_GUESS_TIME = 10000;
+    private final static int MAX_DRAW_TIME = 6000;
+    private final static int MAX_GUESS_TIME = 12000;
     private final static int TIME_PERIOD = 10;
     private final static int WHAT_UPDATE_DRAW_TIME = 0;
     private final static int WHAT_UPDATE_GUESS_TIME = 1;
