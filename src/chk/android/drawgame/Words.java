@@ -16,10 +16,10 @@ public class Words {
     public static final String WORDS_RENWU = "牛顿;刘翔;外星人;超人";
     public static final String WORDS_JIERI = "圣诞节;端午节;中秋节";
     public static final String WORDS_DIFANG = "天安门;沙滩;中国;太阳系;长城;上海";
-    public static final String WORDS_SHIQING = "电视购物;打麻将;加班;抽烟";
+    public static final String WORDS_SHIQING = "电视购物;打麻将;加班;抽烟;刷牙";
     public static final String WORDS_YINGSHI = "还珠格格;喜羊羊;西游记;葫芦娃";
     public static final String WORDS_DONGWU = "蝴蝶;草泥马;娃娃鱼;东北虎";
-    public static final String WORDS_CHIDE = "南瓜;蛋炒饭;肯德基;冰激凌;煎饼";
+    public static final String WORDS_CHIDE = "南瓜;蛋炒饭;肯德基;冰激凌;煎饼;烧烤";
     public static final String WORDS_YINLIAO = "啤酒;茅台;白开水;可乐";
     public static final String WORDS_DIANQI = "电脑;饮水机;空调;洗衣机;吸尘器";
     public static final String WORDS_YUNDONG = "足球;羽毛球;举重;跳水;太极拳;台球";
